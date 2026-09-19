@@ -1,0 +1,21 @@
+<div style="max-width: 400px; margin: 50px auto; font-family: Arial, sans-serif;">
+  <h2>Iniciar Sesión</h2>
+  
+  <div style="margin-bottom: 15px;">
+    <label>Usuario:</label>
+    <input type="text" [(ngModel)]="credenciales.username" style="width: 100%; padding: 8px;">
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <label>Contraseña:</label>
+    <input type="password" [(ngModel)]="credenciales.password" style="width: 100%; padding: 8px;">
+  </div>
+
+  <button (click)="iniciarSesion()" style="width: 100%; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer;">
+    Entrar
+  </button>
+
+  <p *ngIf="error" style="color: red; margin-top: 10px;">
+    Credenciales incorrectas. Intenta de nuevo.
+  </p>
+</div>

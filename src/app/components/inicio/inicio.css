@@ -1,0 +1,154 @@
+/* Reseteo y Contenedor Principal */
+.app-container {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f4f6f8;
+}
+
+/* Navbar Oscuro */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a252f;
+  padding: 0 30px;
+  height: 70px;
+  color: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.badge {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.btn-logout {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Layout Central */
+.main-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Menú Lateral Oscuro (Estilo Dashboard) */
+.sidebar {
+  width: 270px;
+  background-color: #1a252f;
+  border-right: 1px solid #141d26;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-link, .nav-link-header {
+  display: block;
+  padding: 14px 25px;
+  color: #bdc3c7;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+}
+
+/* Efecto Verde Esmeralda al pasar el mouse */
+.nav-item:hover > .nav-link, 
+.nav-item:hover > .nav-link-header {
+  background-color: #2c3e50;
+  color: #1abc9c;
+  border-left: 4px solid #1abc9c;
+}
+
+.sub-menu {
+  list-style: none;
+  padding-left: 40px;
+  margin: 5px 0 10px 0;
+}
+
+.sub-menu li a {
+  display: block;
+  padding: 8px 0;
+  color: #7f8c8d;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.sub-menu li a:hover {
+  color: #1abc9c;
+  font-weight: 500;
+}
+
+/* Contenido Central */
+.content {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+/* Tarjeta invisible para que el texto flote */
+.welcome-card {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 50px;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.welcome-card h1 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+}
+
+.welcome-card p {
+  color: #546e7a;
+  line-height: 1.7;
+  font-size: 1.1rem;
+}

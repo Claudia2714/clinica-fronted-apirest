@@ -1,0 +1,71 @@
+<div class="app-container">
+  <!-- Barra de Navegación Superior -->
+  <header class="navbar">
+    <div class="logo">
+      Clínica Médica
+    </div>
+    <div class="user-profile">
+      <span class="badge">{{ usuarioActual }}</span>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- Menú Lateral Oscuro -->
+    <aside class="sidebar">
+      <div class="menu-section">
+        <ul class="nav-list">
+          
+          <li class="nav-item">
+            <a class="nav-link">Inicio</a>
+          </li>
+          
+          <!-- PACIENTES -->
+          <li class="nav-item" *ngIf="esAdmin || esOperador">
+            <span class="nav-link-header">Pacientes</span>
+            <ul class="sub-menu">
+              <li><a>Consultar pacientes</a></li>
+              <li *ngIf="esAdmin"><a>Registrar paciente</a></li>
+            </ul>
+          </li>
+
+          <!-- MÉDICOS -->
+          <li class="nav-item" *ngIf="esAdmin">
+            <span class="nav-link-header">Médicos</span>
+            <ul class="sub-menu">
+              <li><a>Consultar médicos</a></li>
+              <li><a>Registrar médico</a></li>
+            </ul>
+          </li>
+
+          <!-- CITAS -->
+          <li class="nav-item" *ngIf="esAdmin || esOperador">
+            <span class="nav-link-header">Citas</span>
+            <ul class="sub-menu">
+              <li><a>Consultar citas</a></li>
+              <li><a>Registrar cita</a></li>
+            </ul>
+          </li>
+
+          <!-- ADMINISTRACIÓN -->
+          <li class="nav-item" *ngIf="esAdmin">
+            <span class="nav-link-header">Administración</span>
+            <ul class="sub-menu">
+              <li><a>Usuarios</a></li>
+              <li><a>Roles</a></li>
+            </ul>
+          </li>
+
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="content">
+      <div class="welcome-card">
+        <h1>Bienvenido al sistema</h1>
+        <p>Esta es la página de inicio cargada dinámicamente según tus permisos de seguridad asignados en el JWT. Navega por el menú para descubrir más.</p>
+      </div>
+    </main>
+  </div>
+</div>
