@@ -1,0 +1,12 @@
+.page-container { padding: 30px; max-width: 1000px; margin: 0 auto; }
+.header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.header-section h2 { color: #2c3e50; margin: 0; }
+.btn-primary { background-color: #1abc9c; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-primary:hover { background-color: #16a085; }
+.table-card { background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
+.modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+.modern-table th { background-color: #f8f9fa; color: #34495e; padding: 15px 20px; font-weight: 600; border-bottom: 2px solid #eaeded; }
+.modern-table td { padding: 15px 20px; color: #546e7a; border-bottom: 1px solid #eaeded; }
+.modern-table tbody tr:hover { background-color: #f4f6f8; }
+.btn-action { background-color: transparent; color: #3498db; border: 1px solid #3498db; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+.btn-action:hover { background-color: #3498db; color: white; }

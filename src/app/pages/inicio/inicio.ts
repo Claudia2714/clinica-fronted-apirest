@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { HttpClient } from '@angular/common/http'; // 1. Agregamos esta importación
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule], // 2. Agrégalo también aquí
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -18,10 +18,10 @@ export class Inicio implements OnInit {
 
   // 2. Inyectamos el HttpClient en el constructor
   constructor(
-    private authService: AuthService, 
-    private router: Router,
-    private http: HttpClient 
-  ) {}
+  private authService: AuthService, 
+  public router: Router, // <--- IMPORTANTE QUE DIGA PUBLIC
+  private http: HttpClient 
+) {}
 
   ngOnInit(): void {
     const roles = this.authService.obtenerRoles();

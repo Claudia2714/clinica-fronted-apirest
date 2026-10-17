@@ -17,14 +17,15 @@
         <ul class="nav-list">
           
           <li class="nav-item">
-            <a class="nav-link">Inicio</a>
+            <a class="nav-link" routerLink="/inicio">Inicio</a>
           </li>
           
           <!-- PACIENTES -->
           <li class="nav-item" *ngIf="esAdmin || esOperador">
             <span class="nav-link-header">Pacientes</span>
             <ul class="sub-menu">
-              <li><a>Consultar pacientes</a></li>
+              <!-- Ruta actualizada a la ruta hija -->
+              <li><a routerLink="/inicio/pacientes">Consultar pacientes</a></li>
               <li *ngIf="esAdmin"><a>Registrar paciente</a></li>
             </ul>
           </li>
@@ -62,10 +63,14 @@
 
     <!-- Contenido Principal -->
     <main class="content">
-      <div class="welcome-card">
+      <!-- Mensaje de bienvenida: solo visible en la raíz de /inicio -->
+      <div class="welcome-card" *ngIf="router.url === '/inicio'">
         <h1>Bienvenido al sistema</h1>
         <p>Esta es la página de inicio cargada dinámicamente según tus permisos de seguridad asignados en el JWT. Navega por el menú para descubrir más.</p>
       </div>
+
+      <!-- Aquí se inyectarán las pantallas hijas (como la tabla de pacientes) manteniendo el menú -->
+      <router-outlet></router-outlet>
     </main>
   </div>
 </div>
