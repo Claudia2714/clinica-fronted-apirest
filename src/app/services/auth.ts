@@ -2,19 +2,25 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private authUrl = 'http://localhost:8081/auth/login';
+  // ✅ URL desde el archivo de entorno — cambia automáticamente en producción
+  private authUrl = `${environment.authUrl}/auth/login`;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  login(credentials: any) {
+  /**
+   * Envía las credenciales + token Turnstile al backend.
+   * @param credentials objeto con username, password y turnstileToken
+   */
+  login(credentials: { username: string; password: string; turnstileToken: string }) {
     return this.http.post(this.authUrl, credentials, { responseType: 'text' });
   }
 
@@ -36,7 +42,6 @@ export class AuthService {
     if (token) {
       try {
         const decodificado: any = jwtDecode(token);
-        // Si tu claim de roles en Spring se llama diferente (ej. authorities), cámbialo aquí
         return decodificado.roles || [];
       } catch (error) {
         return [];

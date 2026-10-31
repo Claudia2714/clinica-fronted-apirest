@@ -1,21 +1,41 @@
 <div style="max-width: 400px; margin: 50px auto; font-family: Arial, sans-serif;">
   <h2>Iniciar Sesión</h2>
-  
+
   <div style="margin-bottom: 15px;">
     <label>Usuario:</label>
-    <input type="text" [(ngModel)]="credenciales.username" style="width: 100%; padding: 8px;">
+    <input type="text" [(ngModel)]="credenciales.username"
+           style="width: 100%; padding: 8px; box-sizing: border-box;">
   </div>
 
   <div style="margin-bottom: 15px;">
     <label>Contraseña:</label>
-    <input type="password" [(ngModel)]="credenciales.password" style="width: 100%; padding: 8px;">
+    <input type="password" [(ngModel)]="credenciales.password"
+           (keydown.enter)="iniciarSesion()"
+           style="width: 100%; padding: 8px; box-sizing: border-box;">
   </div>
 
-  <button (click)="iniciarSesion()" style="width: 100%; padding: 10px; background-color: #0056b3; color: white; border: none; cursor: pointer;">
-    Entrar
+  <!-- ── Widget de Cloudflare Turnstile ────────────────────────────────────────
+       data-sitekey: Site Key de tu cuenta en Cloudflare (cargada desde environment)
+       data-callback: función expuesta en window por LoginComponent
+       data-expired-callback: función expuesta en window si el token expira
+  -->
+  <div style="margin-bottom: 15px;">
+    <div class="cf-turnstile"
+         [attr.data-sitekey]="turnstileSiteKey"
+         data-callback="onCaptchaResolved"
+         data-expired-callback="onCaptchaExpired">
+    </div>
+  </div>
+
+  <button (click)="iniciarSesion()"
+          [disabled]="cargando"
+          style="width: 100%; padding: 10px; background-color: #0056b3;
+                 color: white; border: none; cursor: pointer; opacity: 1"
+          [style.opacity]="cargando ? '0.7' : '1'">
+    {{ cargando ? 'Verificando...' : 'Entrar' }}
   </button>
 
   <p *ngIf="error" style="color: red; margin-top: 10px;">
-    Credenciales incorrectas. Intenta de nuevo.
+    {{ errorMsg }}
   </p>
 </div>

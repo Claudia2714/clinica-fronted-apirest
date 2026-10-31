@@ -24,9 +24,8 @@
           <li class="nav-item" *ngIf="esAdmin || esOperador">
             <span class="nav-link-header">Pacientes</span>
             <ul class="sub-menu">
-              <!-- Ruta actualizada a la ruta hija -->
               <li><a routerLink="/inicio/pacientes">Consultar pacientes</a></li>
-              <li *ngIf="esAdmin"><a>Registrar paciente</a></li>
+              <li><a routerLink="/inicio/pacientes/nuevo">Registrar paciente</a></li>
             </ul>
           </li>
 

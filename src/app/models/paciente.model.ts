@@ -1,7 +1,13 @@
 export interface Paciente {
+  id?: number;
   idPaciente?: number;
-  nombres: string;
-  apellidos: string;
+  nombre?: string;
+  nombres?: string;
+  apellido?: string;
+  apellidos?: string;
   telefono: string;
   dpi: string;
+  correo: string;
+  fechaNacimiento: string;
+  activo?: boolean;
 }

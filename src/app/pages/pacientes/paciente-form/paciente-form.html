@@ -1,0 +1,128 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ esEdicion ? '✏️ Modificar Paciente' : '🩺 Registrar Nuevo Paciente' }}</h2>
+      <p class="subtitle">
+        {{ esEdicion ? 'Actualiza los datos del paciente en el sistema' : 'Ingresa la información para dar de alta al paciente' }}
+      </p>
+    </div>
+
+    <!-- Mensaje de error general -->
+    <div *ngIf="errorMensaje" class="alert-error">
+      {{ errorMensaje }}
+    </div>
+
+    <!-- Indicador de carga -->
+    <div *ngIf="cargando" class="loading-state">
+      <p>Cargando información del paciente...</p>
+    </div>
+
+    <form *ngIf="!cargando" [formGroup]="pacienteForm" (ngSubmit)="guardar()" novalidate>
+      <div class="form-grid">
+        <!-- Campo Nombres -->
+        <div class="form-group">
+          <label for="nombres">Nombres <span class="required">*</span></label>
+          <input
+            id="nombres"
+            type="text"
+            formControlName="nombres"
+            placeholder="Ej. Juan Carlos"
+            [class.input-invalid]="pacienteForm.get('nombres')?.invalid && pacienteForm.get('nombres')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('nombres')?.invalid && pacienteForm.get('nombres')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('nombres')?.errors?.['required']">Los nombres son obligatorios.</span>
+            <span *ngIf="pacienteForm.get('nombres')?.errors?.['minlength']">Mínimo 2 caracteres.</span>
+          </div>
+        </div>
+
+        <!-- Campo Apellidos -->
+        <div class="form-group">
+          <label for="apellidos">Apellidos <span class="required">*</span></label>
+          <input
+            id="apellidos"
+            type="text"
+            formControlName="apellidos"
+            placeholder="Ej. Pérez Gómez"
+            [class.input-invalid]="pacienteForm.get('apellidos')?.invalid && pacienteForm.get('apellidos')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('apellidos')?.invalid && pacienteForm.get('apellidos')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios.</span>
+            <span *ngIf="pacienteForm.get('apellidos')?.errors?.['minlength']">Mínimo 2 caracteres.</span>
+          </div>
+        </div>
+
+        <!-- Campo Teléfono -->
+        <div class="form-group">
+          <label for="telefono">Teléfono <span class="required">*</span></label>
+          <input
+            id="telefono"
+            type="text"
+            formControlName="telefono"
+            placeholder="Ej. 55551234 (8 a 15 dígitos)"
+            [class.input-invalid]="pacienteForm.get('telefono')?.invalid && pacienteForm.get('telefono')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('telefono')?.invalid && pacienteForm.get('telefono')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</span>
+            <span *ngIf="pacienteForm.get('telefono')?.errors?.['pattern']">Ingrese un teléfono válido (entre 8 y 15 dígitos numéricos).</span>
+          </div>
+        </div>
+
+        <!-- Campo DPI -->
+        <div class="form-group">
+          <label for="dpi">DPI (Documento Personal de Identificación) <span class="required">*</span></label>
+          <input
+            id="dpi"
+            type="text"
+            formControlName="dpi"
+            placeholder="Ej. 1234567890101 (13 dígitos)"
+            [class.input-invalid]="pacienteForm.get('dpi')?.invalid && pacienteForm.get('dpi')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('dpi')?.invalid && pacienteForm.get('dpi')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('dpi')?.errors?.['required']">El DPI es obligatorio.</span>
+            <span *ngIf="pacienteForm.get('dpi')?.errors?.['pattern']">El DPI debe contener exactamente 13 dígitos numéricos.</span>
+          </div>
+        </div>
+
+        <!-- Campo Correo Electrónico -->
+        <div class="form-group">
+          <label for="correo">Correo Electrónico <span class="required">*</span></label>
+          <input
+            id="correo"
+            type="email"
+            formControlName="correo"
+            placeholder="ejemplo@correo.com"
+            [class.input-invalid]="pacienteForm.get('correo')?.invalid && pacienteForm.get('correo')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('correo')?.invalid && pacienteForm.get('correo')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('correo')?.errors?.['required']">El correo es obligatorio.</span>
+            <span *ngIf="pacienteForm.get('correo')?.errors?.['email']">Ingrese un correo electrónico válido.</span>
+          </div>
+        </div>
+
+        <!-- Campo Fecha de Nacimiento -->
+        <div class="form-group">
+          <label for="fechaNacimiento">Fecha de Nacimiento <span class="required">*</span></label>
+          <input
+            id="fechaNacimiento"
+            type="date"
+            formControlName="fechaNacimiento"
+            [class.input-invalid]="pacienteForm.get('fechaNacimiento')?.invalid && pacienteForm.get('fechaNacimiento')?.touched"
+          />
+          <div *ngIf="pacienteForm.get('fechaNacimiento')?.invalid && pacienteForm.get('fechaNacimiento')?.touched" class="field-error">
+            <span *ngIf="pacienteForm.get('fechaNacimiento')?.errors?.['required']">La fecha de nacimiento es obligatoria.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="cancelar()" [disabled]="guardando">
+          Cancelar
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : (esEdicion ? 'Actualizar Paciente' : 'Guardar Paciente') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

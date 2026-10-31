@@ -1,8 +1,29 @@
 <div class="page-container">
   <div class="header-section">
     <h2>🩺 Consultar Pacientes</h2>
-    <button class="btn-primary">+ Nuevo Paciente</button>
   </div>
+
+  <!-- Barra de Búsqueda Local -->
+  <div class="search-bar-section">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (input)="aplicarFiltro()"
+        placeholder="Buscar por nombre, apellido o DPI..."
+        class="search-input"
+      />
+      <button *ngIf="terminoBusqueda" class="btn-clear-search" (click)="limpiarBusqueda()" title="Limpiar búsqueda">
+        ✕
+      </button>
+    </div>
+    <div class="results-count" *ngIf="!cargando && pacientes.length > 0">
+      Mostrando {{ pacientesFiltrados.length }} de {{ pacientes.length }} pacientes
+    </div>
+  </div>
+
+  <!-- Tabla de Resultados -->
   <div class="table-card">
     <table class="modern-table">
       <thead>
@@ -11,22 +32,70 @@
           <th>Nombres</th>
           <th>Apellidos</th>
           <th>Teléfono</th>
-          <th>Acciones</th>
+          <th>DPI</th>
+          <th>Correo</th>
+          <th style="text-align: center;">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let paciente of pacientes">
-          <td>{{ paciente.idPaciente }}</td>
-          <td>{{ paciente.nombres }}</td>
-          <td>{{ paciente.apellidos }}</td>
-          <td>{{ paciente.telefono }}</td>
-          <td><button class="btn-action">Ver</button></td>
-        </tr>
-        <tr *ngIf="pacientes.length === 0">
-          <td colspan="5" style="text-align: center; color: #7f8c8d; padding: 20px;">
-            No hay pacientes registrados o cargando datos...
+        <!-- Estado de carga inicial / en progreso -->
+        <tr *ngIf="cargando">
+          <td colspan="7" style="text-align: center; color: #3498db; padding: 25px;">
+            ⏳ Cargando pacientes desde el servidor...
           </td>
         </tr>
+
+        <!-- Filas y mensajes cuando finaliza la carga -->
+        <ng-container *ngIf="!cargando">
+          <!-- Filas con datos de pacientes -->
+          <tr *ngFor="let paciente of pacientesFiltrados">
+            <td><strong>#{{ paciente.idPaciente || paciente.id }}</strong></td>
+            <td>{{ paciente.nombres || paciente.nombre }}</td>
+            <td>{{ paciente.apellidos || paciente.apellido }}</td>
+            <td>{{ paciente.telefono }}</td>
+            <td>{{ paciente.dpi }}</td>
+            <td>{{ paciente.correo || '—' }}</td>
+            <td style="text-align: center;">
+              <div class="actions-cell">
+                <button
+                  class="btn-action btn-edit"
+                  (click)="editarPaciente(paciente.idPaciente || paciente.id)"
+                  title="Editar datos del paciente"
+                >
+                  ✏️ Editar
+                </button>
+                <button
+                  class="btn-action btn-delete"
+                  (click)="eliminarPaciente(paciente.idPaciente || paciente.id, (paciente.nombres || paciente.nombre) + ' ' + (paciente.apellidos || paciente.apellido))"
+                  title="Eliminar paciente"
+                >
+                  🗑️ Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Estado de error -->
+          <tr *ngIf="error">
+            <td colspan="7" style="text-align: center; color: #e74c3c; padding: 25px;">
+              ⚠️ {{ error }}
+            </td>
+          </tr>
+
+          <!-- Sin registros en la base de datos -->
+          <tr *ngIf="!error && pacientes.length === 0">
+            <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              📋 No hay pacientes registrados en el sistema. Haz clic en <strong>+ Nuevo Paciente</strong> para agregar el primero.
+            </td>
+          </tr>
+
+          <!-- Sin coincidencias en la búsqueda -->
+          <tr *ngIf="!error && pacientes.length > 0 && pacientesFiltrados.length === 0">
+            <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              🔍 No se encontraron pacientes que coincidan con "<em>{{ terminoBusqueda }}</em>".
+            </td>
+          </tr>
+        </ng-container>
       </tbody>
     </table>
   </div>

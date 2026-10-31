@@ -1,1 +1,1 @@
-export interface Paciente {}
+export * from './paciente.model';
