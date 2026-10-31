@@ -5,8 +5,6 @@ export const environment = {
   authUrl: 'https://clinica-auth-server.onrender.com',
   apiUrl:  'https://clinica-apirest-demo.onrender.com',
 
-  // Site Key oficial de Cloudflare Turnstile para producción
-  // Puedes usar tu Site Key pública creada en Cloudflare Dashboard
-  // o '3x00000000000000000000FF' para mantener el reto interactivo siempre activo
-  turnstileSiteKey: '3x00000000000000000000FF'
+  // Site Key oficial de Cloudflare Turnstile de tu cuenta
+  turnstileSiteKey: '0x4AAAAAAFuT2dk-XM8-4OUp'
 };

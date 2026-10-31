@@ -7,7 +7,6 @@ export const environment = {
   // URL base del apirest-demo (datos de la clínica)
   apiUrl: 'http://localhost:8081',
 
-  // Site Key oficial de Cloudflare Turnstile que FUERZA un reto interactivo real (Visible con Checkbox)
-  // Reemplázala por tu clave personalizada de https://dash.cloudflare.com si tienes una
-  turnstileSiteKey: '3x00000000000000000000FF'
+  // Site Key oficial de Cloudflare Turnstile de tu cuenta
+  turnstileSiteKey: '0x4AAAAAAFuT2dk-XM8-4OUp'
 };
