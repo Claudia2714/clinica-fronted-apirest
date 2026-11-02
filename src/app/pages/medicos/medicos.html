@@ -1,0 +1,78 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>👨‍⚕️ Consultar Médicos</h2>
+    <button class="btn-primary" (click)="irANuevo()">+ Registrar Médico</button>
+  </div>
+
+  <div class="search-bar-section">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (input)="aplicarFiltro()"
+        placeholder="Buscar por nombre, especialidad o colegiado..."
+        class="search-input"
+      />
+      <button *ngIf="terminoBusqueda" class="btn-clear-search" (click)="limpiarBusqueda()">✕</button>
+    </div>
+    <div class="results-count" *ngIf="!cargando">
+      Mostrando {{ medicosFiltrados.length }} de {{ medicos.length }} médicos
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre Completo</th>
+          <th>Especialidad</th>
+          <th>No. Colegiado</th>
+          <th>Teléfono</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="cargando">
+          <td colspan="6" style="text-align: center; color: #3498db; padding: 25px;">
+            ⏳ Cargando médicos desde el servidor...
+          </td>
+        </tr>
+        <ng-container *ngIf="!cargando">
+          <tr *ngFor="let m of medicosFiltrados">
+            <td><strong>#{{ m.id }}</strong></td>
+            <td><strong>{{ m.nombre }}</strong></td>
+            <td><span class="badge-role">{{ m.especialidad }}</span></td>
+            <td>{{ m.numeroColegiado }}</td>
+            <td>{{ m.telefono || '—' }}</td>
+            <td style="text-align: center;">
+              <div class="actions-cell">
+                <button class="btn-action btn-edit" (click)="editarMedico(m.id)">✏️ Editar</button>
+                <button class="btn-action btn-delete" (click)="eliminarMedico(m.id, m.nombre)">🗑️ Eliminar</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="error">
+            <td colspan="6" style="text-align: center; color: #e74c3c; padding: 25px;">
+              ⚠️ {{ error }}
+            </td>
+          </tr>
+
+          <tr *ngIf="!error && medicos.length === 0">
+            <td colspan="6" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              📋 No hay médicos registrados. Haz clic en <strong>+ Registrar Médico</strong> para agregar uno.
+            </td>
+          </tr>
+
+          <tr *ngIf="!error && medicos.length > 0 && medicosFiltrados.length === 0">
+            <td colspan="6" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              🔍 No se encontraron médicos que coincidan con "{{ terminoBusqueda }}".
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

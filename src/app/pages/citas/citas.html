@@ -1,0 +1,95 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>📅 Consultar Citas Médicas</h2>
+    <button class="btn-primary" (click)="irANueva()">+ Agendar Nueva Cita</button>
+  </div>
+
+  <div class="search-bar-section">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (input)="aplicarFiltro()"
+        placeholder="Buscar por paciente, médico o motivo..."
+        class="search-input"
+      />
+      <button *ngIf="terminoBusqueda" class="btn-clear-search" (click)="limpiarBusqueda()">✕</button>
+    </div>
+    <div class="results-count" *ngIf="!cargando">
+      Mostrando {{ citasFiltradas.length }} de {{ citas.length }} citas
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha y Hora</th>
+          <th>Paciente</th>
+          <th>Médico Asignado</th>
+          <th>Motivo de Consulta</th>
+          <th>Estado</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="cargando">
+          <td colspan="7" style="text-align: center; color: #3498db; padding: 25px;">
+            ⏳ Cargando citas médicas desde el servidor...
+          </td>
+        </tr>
+        <ng-container *ngIf="!cargando">
+          <tr *ngFor="let c of citasFiltradas">
+            <td><strong>#{{ c.id }}</strong></td>
+            <td><strong>{{ c.fecha }}</strong> <small style="color: #7f8c8d;">{{ c.hora }}</small></td>
+            <td>{{ c.paciente?.nombres || c.paciente?.nombre }} {{ c.paciente?.apellidos || c.paciente?.apellido }}</td>
+            <td>Dr(a). {{ c.medico?.nombre }}</td>
+            <td>{{ c.motivo }}</td>
+            <td>
+              <span class="badge-status" [ngClass]="{
+                'badge-prog': c.estado === 'PROGRAMADA',
+                'badge-atend': c.estado === 'ATENDIDA',
+                'badge-canc': c.estado === 'CANCELADA'
+              }">
+                {{ c.estado }}
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <div class="actions-cell">
+                <button *ngIf="c.estado !== 'ATENDIDA'" class="btn-action btn-atender" (click)="cambiarEstado(c, 'ATENDIDA')" title="Marcar como atendida">
+                  ✅ Atendida
+                </button>
+                <button *ngIf="c.estado !== 'CANCELADA'" class="btn-action btn-cancelar" (click)="cambiarEstado(c, 'CANCELADA')" title="Cancelar cita">
+                  ❌ Cancelar
+                </button>
+                <button class="btn-action btn-delete" (click)="eliminarCita(c.id)" title="Eliminar cita">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="error">
+            <td colspan="7" style="text-align: center; color: #e74c3c; padding: 25px;">
+              ⚠️ {{ error }}
+            </td>
+          </tr>
+
+          <tr *ngIf="!error && citas.length === 0">
+            <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              📋 No hay citas registradas en el sistema. Haz clic en <strong>+ Agendar Nueva Cita</strong>.
+            </td>
+          </tr>
+
+          <tr *ngIf="!error && citas.length > 0 && citasFiltradas.length === 0">
+            <td colspan="7" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              🔍 No se encontraron citas que coincidan con "{{ terminoBusqueda }}".
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

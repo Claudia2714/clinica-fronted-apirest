@@ -1,0 +1,45 @@
+<div class="form-container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ esEdicion ? '✏️ Modificar Médico' : '👨‍⚕️ Registrar Nuevo Médico' }}</h2>
+      <p>Ingresa la información profesional del médico</p>
+    </div>
+
+    <div *ngIf="cargando" class="loading-state">
+      ⏳ Cargando datos del médico...
+    </div>
+
+    <form *ngIf="!cargando" (ngSubmit)="guardar()" class="form-grid">
+      <div class="form-group full-width">
+        <label>Nombre Completo *</label>
+        <input type="text" [(ngModel)]="medico.nombre" name="nombre" required placeholder="Ej: Dr. Juan Pérez" />
+      </div>
+
+      <div class="form-group">
+        <label>Especialidad Médica *</label>
+        <input type="text" [(ngModel)]="medico.especialidad" name="especialidad" required placeholder="Ej: Pediatría, Cardiología..." />
+      </div>
+
+      <div class="form-group">
+        <label>Número de Colegiado *</label>
+        <input type="text" [(ngModel)]="medico.numeroColegiado" name="numeroColegiado" required placeholder="Ej: COL-12345" />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Teléfono de Contacto</label>
+        <input type="text" [(ngModel)]="medico.telefono" name="telefono" placeholder="Ej: 5555-1234" />
+      </div>
+
+      <div *ngIf="error" class="error-msg full-width">
+        ⚠️ {{ error }}
+      </div>
+
+      <div class="form-actions full-width">
+        <button type="button" class="btn-cancel" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+        <button type="submit" class="btn-submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : (esEdicion ? 'Actualizar Médico' : 'Guardar Médico') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

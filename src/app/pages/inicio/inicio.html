@@ -33,8 +33,8 @@
           <li class="nav-item" *ngIf="esAdmin">
             <span class="nav-link-header">Médicos</span>
             <ul class="sub-menu">
-              <li><a>Consultar médicos</a></li>
-              <li><a>Registrar médico</a></li>
+              <li><a routerLink="/inicio/medicos">Consultar médicos</a></li>
+              <li><a routerLink="/inicio/medicos/nuevo">Registrar médico</a></li>
             </ul>
           </li>
 
@@ -42,8 +42,8 @@
           <li class="nav-item" *ngIf="esAdmin || esOperador">
             <span class="nav-link-header">Citas</span>
             <ul class="sub-menu">
-              <li><a>Consultar citas</a></li>
-              <li><a>Registrar cita</a></li>
+              <li><a routerLink="/inicio/citas">Consultar citas</a></li>
+              <li><a routerLink="/inicio/citas/nueva">Registrar cita</a></li>
             </ul>
           </li>
 
@@ -51,8 +51,7 @@
           <li class="nav-item" *ngIf="esAdmin">
             <span class="nav-link-header">Administración</span>
             <ul class="sub-menu">
-              <li><a>Usuarios</a></li>
-              <li><a>Roles</a></li>
+              <li><a routerLink="/inicio/administracion/usuarios">Usuarios y Roles</a></li>
             </ul>
           </li>
 
@@ -64,11 +63,11 @@
     <main class="content">
       <!-- Mensaje de bienvenida: solo visible en la raíz de /inicio -->
       <div class="welcome-card" *ngIf="router.url === '/inicio'">
-        <h1>Bienvenido al sistema</h1>
-        <p>Esta es la página de inicio cargada dinámicamente según tus permisos de seguridad asignados en el JWT. Navega por el menú para descubrir más.</p>
+        <h1>Bienvenido al sistema de Gestión Clínica</h1>
+        <p>Has ingresado como <strong>{{ usuarioActual }}</strong>. Utiliza el panel lateral para navegar entre Pacientes, Médicos, Citas Médicas y Administración de Usuarios según tus permisos.</p>
       </div>
 
-      <!-- Aquí se inyectarán las pantallas hijas (como la tabla de pacientes) manteniendo el menú -->
+      <!-- Aquí se inyectarán las pantallas hijas manteniendo el menú -->
       <router-outlet></router-outlet>
     </main>
   </div>

@@ -1,4 +1,100 @@
-<div style="padding: 50px; text-align: center;">
-  <h1 style="color: #2c3e50;">⚙️ Panel de Administración de Usuarios</h1>
-  <p style="color: #27ae60; font-weight: bold;">¡Acceso concedido! Tienes los permisos necesarios.</p>
+<div class="page-container">
+  <div class="header-section">
+    <h2>⚙️ Administración de Usuarios y Roles</h2>
+    <button class="btn-primary" (click)="abrirCrear()">+ Nuevo Usuario</button>
+  </div>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Roles Asignados</th>
+          <th>Intentos Fallidos</th>
+          <th>Estado</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="cargando">
+          <td colspan="6" style="text-align: center; color: #3498db; padding: 25px;">
+            ⏳ Cargando usuarios desde el servidor de seguridad...
+          </td>
+        </tr>
+        <ng-container *ngIf="!cargando">
+          <tr *ngFor="let u of usuarios">
+            <td><strong>#{{ u.id }}</strong></td>
+            <td><strong>{{ u.username }}</strong></td>
+            <td>
+              <span *ngFor="let r of u.roles" class="badge-role">{{ r }}</span>
+            </td>
+            <td>
+              <span [style.color]="(u.intentosFallidos || 0) >= 5 ? '#e74c3c' : '#27ae60'">
+                <strong>{{ u.intentosFallidos || 0 }}</strong> / 5
+              </span>
+            </td>
+            <td>
+              <span *ngIf="u.bloqueado" class="badge-bloqueado">🔒 BLOQUEADO (15 min)</span>
+              <span *ngIf="!u.bloqueado" class="badge-activo">✅ ACTIVO</span>
+            </td>
+            <td style="text-align: center;">
+              <div class="actions-cell">
+                <button *ngIf="u.bloqueado || (u.intentosFallidos || 0) > 0" class="btn-action btn-unlock" (click)="desbloquear(u)" title="Desbloquear usuario inmediatamente">
+                  🔓 Desbloquear
+                </button>
+                <button class="btn-action btn-edit" (click)="abrirEditar(u)">✏️ Roles</button>
+                <button *ngIf="u.username !== 'admin'" class="btn-action btn-delete" (click)="eliminar(u)">🗑️ Eliminar</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="error">
+            <td colspan="6" style="text-align: center; color: #e74c3c; padding: 25px;">
+              ⚠️ {{ error }}
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para Crear / Editar Usuario -->
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ usuarioForm.id ? '✏️ Modificar Usuario y Roles' : '👤 Crear Nuevo Usuario' }}</h3>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre de Usuario *</label>
+          <input type="text" [(ngModel)]="usuarioForm.username" placeholder="ej: doctor_perez" [disabled]="!!usuarioForm.id" />
+        </div>
+
+        <div class="form-group">
+          <label>{{ usuarioForm.id ? 'Nueva Contraseña (dejar en blanco para conservar actual)' : 'Contraseña *' }}</label>
+          <input type="password" [(ngModel)]="usuarioForm.password" placeholder="••••••" />
+        </div>
+
+        <div class="form-group">
+          <label>Roles de Seguridad Asignados *</label>
+          <div class="roles-checklist">
+            <label *ngFor="let r of rolesDisponibles" class="role-checkbox-label">
+              <input type="checkbox" [(ngModel)]="usuarioForm.roles[r.nombre]" />
+              <span>{{ r.nombre }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+        <button class="btn-submit" (click)="guardarUsuario()" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
