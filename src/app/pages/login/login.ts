@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, inject, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
 import { environment } from '../../environments/environment';
 
@@ -27,18 +28,21 @@ export class LoginComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private router      = inject(Router);
   private ngZone      = inject(NgZone);
+  private cdr         = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     // 1. Exponer callbacks en window para que Turnstile los invoque al resolver el reto
     (window as any).onCaptchaResolved = (token: string) => {
       this.ngZone.run(() => {
         this.onCaptchaResolved(token);
+        this.cdr.detectChanges();
       });
     };
 
     (window as any).onCaptchaExpired = () => {
       this.ngZone.run(() => {
         this.onCaptchaExpired();
+        this.cdr.detectChanges();
       });
     };
 
@@ -100,11 +104,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!this.turnstileToken) {
       this.error    = true;
       this.errorMsg = 'Por favor completa la verificación de seguridad (CAPTCHA).';
+      this.cdr.detectChanges();
       return;
     }
 
     this.cargando = true;
     this.error    = false;
+    this.cdr.detectChanges();
 
     const payload = {
       username:       this.credenciales.username,
@@ -112,31 +118,41 @@ export class LoginComponent implements OnInit, OnDestroy {
       turnstileToken: this.turnstileToken
     };
 
-    this.authService.login(payload).subscribe({
-      next: (token: string) => {
-        this.authService.guardarToken(token);
-        console.log('Ingreso exitoso. Roles asignados:', this.authService.obtenerRoles());
-        this.router.navigate(['/inicio']);
-      },
-      error: (err: any) => {
-        this.cargando = false;
-        this.error    = true;
-        // Diferenciamos el error 429 (rate limit) de otros errores de credenciales
-        if (err.status === 429) {
-          this.errorMsg = 'Demasiados intentos. Espera un momento antes de volver a intentar.';
-        } else {
-          this.errorMsg = 'Credenciales inválidas. Intenta de nuevo.';
-        }
-        // Reseteamos el token y el widget para exigir una nueva verificación
-        this.turnstileToken = '';
-        if (typeof (window as any).turnstile !== 'undefined') {
-          try {
-            (window as any).turnstile.reset();
-          } catch (e) {
-            console.warn('[Turnstile] Error al reiniciar widget:', e);
+    this.authService.login(payload)
+      .pipe(
+        finalize(() => {
+          this.cargando = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (token: string) => {
+          this.authService.guardarToken(token);
+          console.log('Ingreso exitoso. Roles asignados:', this.authService.obtenerRoles());
+          this.router.navigate(['/inicio']);
+        },
+        error: (err: any) => {
+          this.cargando = false;
+          this.error    = true;
+          // Diferenciamos el error 429 (rate limit) de otros errores de credenciales
+          if (err.status === 429) {
+            this.errorMsg = 'Demasiados intentos. Espera un momento antes de volver a intentar.';
+          } else if (err.status === 0) {
+            this.errorMsg = 'No se pudo conectar con el servidor de autenticación. Espera unos segundos e intenta de nuevo.';
+          } else {
+            this.errorMsg = 'Credenciales inválidas o acceso denegado. Verifica tu usuario y contraseña.';
           }
+          // Reseteamos el token y el widget para exigir una nueva verificación
+          this.turnstileToken = '';
+          if (typeof (window as any).turnstile !== 'undefined') {
+            try {
+              (window as any).turnstile.reset();
+            } catch (e) {
+              console.warn('[Turnstile] Error al reiniciar widget:', e);
+            }
+          }
+          this.cdr.detectChanges();
         }
-      }
-    });
+      });
   }
 }

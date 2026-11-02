@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +18,7 @@ export class PacienteFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private pacienteService = inject(PacienteService);
+  private cdr = inject(ChangeDetectorRef);
 
   pacienteForm!: FormGroup;
   esEdicion = false;
@@ -131,6 +132,7 @@ export class PacienteFormComponent implements OnInit {
         finalize(() => {
           // Garantiza al 100% que la bandera de carga se apaga ante éxito, error o cancelación
           this.cargando = false;
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
@@ -156,9 +158,11 @@ export class PacienteFormComponent implements OnInit {
               correo: p.correo || '',
               fechaNacimiento: fechaFormateada
             });
+            this.cdr.detectChanges();
           } catch (error: any) {
             console.error('[PacienteForm] Error al procesar datos del paciente:', error);
             this.errorMensaje = 'Ocurrió un error al procesar la información del paciente.';
+            this.cdr.detectChanges();
           }
         },
         error: (err: any) => {
@@ -166,10 +170,11 @@ export class PacienteFormComponent implements OnInit {
           if (err.status === 404) {
             this.errorMensaje = `No se encontró ningún paciente con el ID: ${id}.`;
           } else if (err.status === 0) {
-            this.errorMensaje = 'No se pudo conectar con el servidor (http://localhost:8081). Verifica que el backend esté activo.';
+            this.errorMensaje = 'No se pudo conectar con el servidor. Verifica que el backend esté activo.';
           } else {
             this.errorMensaje = 'No se pudo cargar la información del paciente desde el servidor.';
           }
+          this.cdr.detectChanges();
         }
       });
   }
@@ -182,6 +187,7 @@ export class PacienteFormComponent implements OnInit {
 
     this.guardando = true;
     this.errorMensaje = '';
+    this.cdr.detectChanges();
 
     const formValues = this.pacienteForm.value;
     const pacienteData: Paciente = {
@@ -200,6 +206,7 @@ export class PacienteFormComponent implements OnInit {
         .pipe(
           finalize(() => {
             this.guardando = false;
+            this.cdr.detectChanges();
           })
         )
         .subscribe({
@@ -209,6 +216,7 @@ export class PacienteFormComponent implements OnInit {
           error: (err: any) => {
             console.error('Error al actualizar paciente:', err);
             this.errorMensaje = 'Error al actualizar el paciente. Verifica los datos ingresados.';
+            this.cdr.detectChanges();
           }
         });
     } else {
@@ -216,6 +224,7 @@ export class PacienteFormComponent implements OnInit {
         .pipe(
           finalize(() => {
             this.guardando = false;
+            this.cdr.detectChanges();
           })
         )
         .subscribe({
@@ -225,6 +234,7 @@ export class PacienteFormComponent implements OnInit {
           error: (err: any) => {
             console.error('Error al registrar paciente:', err);
             this.errorMensaje = 'Error al registrar el paciente. Verifica que el DPI o correo no estén duplicados.';
+            this.cdr.detectChanges();
           }
         });
     }

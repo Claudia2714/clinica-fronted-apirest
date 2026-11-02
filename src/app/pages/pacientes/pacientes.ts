@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,6 +22,7 @@ export class PacientesComponent implements OnInit {
 
   private pacienteService = inject(PacienteService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.cargarPacientes();
@@ -35,6 +36,7 @@ export class PacientesComponent implements OnInit {
       .pipe(
         finalize(() => {
           this.cargando = false;
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
@@ -69,10 +71,12 @@ export class PacientesComponent implements OnInit {
 
           // Mostramos únicamente los últimos 5 pacientes registrados al inicio
           this.aplicarFiltro();
+          this.cdr.detectChanges();
         },
         error: (err: any) => {
-          console.error('Error al cargar pacientes desde el puerto 8081:', err);
-          this.error = 'No se pudieron cargar los pacientes. Verifica que apirest-demo esté corriendo en el puerto 8081.';
+          console.error('Error al cargar pacientes:', err);
+          this.error = 'No se pudieron cargar los pacientes desde el servidor.';
+          this.cdr.detectChanges();
         }
       });
   }
@@ -122,6 +126,7 @@ export class PacientesComponent implements OnInit {
 
     if (confirmacion) {
       this.cargando = true;
+      this.cdr.detectChanges();
       this.pacienteService.eliminarPaciente(id).subscribe({
         next: () => {
           alert('Paciente eliminado exitosamente.');
@@ -131,6 +136,7 @@ export class PacientesComponent implements OnInit {
           console.error('Error al eliminar paciente:', err);
           alert('No se pudo eliminar el paciente. Verifica que no tenga citas registradas u otros datos asociados.');
           this.cargando = false;
+          this.cdr.detectChanges();
         }
       });
     }
