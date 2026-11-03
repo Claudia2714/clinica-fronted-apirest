@@ -31,3 +31,4 @@ export class MedicoService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
+

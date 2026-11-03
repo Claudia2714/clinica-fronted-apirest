@@ -102,3 +102,4 @@ export class MedicoFormComponent implements OnInit {
     this.router.navigate(['/inicio/medicos']);
   }
 }
+

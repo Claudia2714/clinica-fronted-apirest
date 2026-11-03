@@ -2,7 +2,7 @@
   <!-- Barra de Navegación Superior -->
   <header class="navbar">
     <div class="logo">
-      Clínica Médica
+      🏥 Clínica Médica
     </div>
     <div class="user-profile">
       <span class="badge">{{ usuarioActual }}</span>
@@ -17,7 +17,7 @@
         <ul class="nav-list">
           
           <li class="nav-item">
-            <a class="nav-link" routerLink="/inicio">Inicio</a>
+            <a class="nav-link" routerLink="/inicio">📊 Panel Principal</a>
           </li>
           
           <!-- PACIENTES -->
@@ -40,10 +40,10 @@
 
           <!-- CITAS -->
           <li class="nav-item" *ngIf="esAdmin || esOperador">
-            <span class="nav-link-header">Citas</span>
+            <span class="nav-link-header">Citas Médicas</span>
             <ul class="sub-menu">
               <li><a routerLink="/inicio/citas">Consultar citas</a></li>
-              <li><a routerLink="/inicio/citas/nueva">Registrar cita</a></li>
+              <li><a routerLink="/inicio/citas/nueva">Agendar cita</a></li>
             </ul>
           </li>
 
@@ -61,13 +61,114 @@
 
     <!-- Contenido Principal -->
     <main class="content">
-      <!-- Mensaje de bienvenida: solo visible en la raíz de /inicio -->
-      <div class="welcome-card" *ngIf="router.url === '/inicio'">
-        <h1>Bienvenido al sistema de Gestión Clínica</h1>
-        <p>Has ingresado como <strong>{{ usuarioActual }}</strong>. Utiliza el panel lateral para navegar entre Pacientes, Médicos, Citas Médicas y Administración de Usuarios según tus permisos.</p>
+      <!-- DASHBOARD (Visible únicamente en la ruta /inicio) -->
+      <div class="dashboard-wrapper" *ngIf="router.url === '/inicio'">
+        <div class="welcome-banner">
+          <div class="banner-text">
+            <h2>👋 Bienvenido de nuevo, {{ usuarioActual }}</h2>
+            <p>Sistema integral de gestión clínica, control de citas y seguridad de acceso.</p>
+          </div>
+          <div class="quick-actions">
+            <button class="btn-quick" routerLink="/inicio/citas/nueva">+ Agendar Cita</button>
+            <button class="btn-quick secondary" routerLink="/inicio/pacientes/nuevo">+ Nuevo Paciente</button>
+          </div>
+        </div>
+
+        <!-- Tarjetas de Métricas Estadísticas -->
+        <div class="stats-grid">
+          <div class="stat-card stat-blue">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <span class="stat-label">Total Pacientes</span>
+              <strong class="stat-value">{{ totalPacientes }}</strong>
+            </div>
+            <a class="stat-link" routerLink="/inicio/pacientes">Ver módulo →</a>
+          </div>
+
+          <div class="stat-card stat-green">
+            <div class="stat-icon">👨‍⚕️</div>
+            <div class="stat-info">
+              <span class="stat-label">Médicos Activos</span>
+              <strong class="stat-value">{{ totalMedicos }}</strong>
+            </div>
+            <a class="stat-link" routerLink="/inicio/medicos">Ver médicos →</a>
+          </div>
+
+          <div class="stat-card stat-orange">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <span class="stat-label">Citas Programadas</span>
+              <strong class="stat-value">{{ citasProgramadas }}</strong>
+            </div>
+            <a class="stat-link" routerLink="/inicio/citas">Gestionar citas →</a>
+          </div>
+
+          <div class="stat-card stat-purple">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <span class="stat-label">Citas Atendidas</span>
+              <strong class="stat-value">{{ citasAtendidas }}</strong>
+            </div>
+            <a class="stat-link" routerLink="/inicio/citas">Historial citas →</a>
+          </div>
+
+          <div class="stat-card stat-teal" *ngIf="esAdmin">
+            <div class="stat-icon">🔐</div>
+            <div class="stat-info">
+              <span class="stat-label">Usuarios Plataforma</span>
+              <strong class="stat-value">{{ totalUsuarios }}</strong>
+            </div>
+            <a class="stat-link" routerLink="/inicio/administracion/usuarios">Seguridad →</a>
+          </div>
+        </div>
+
+        <!-- Tabla Resumen de Actividad Reciente de Citas -->
+        <div class="recent-card">
+          <div class="recent-header">
+            <h3>🗓️ Próximas Citas y Actividad Reciente</h3>
+            <button class="btn-link" routerLink="/inicio/citas">Ver todas las citas</button>
+          </div>
+
+          <div *ngIf="cargandoMetricas" style="text-align: center; padding: 25px; color: #3498db;">
+            ⏳ Cargando actividad reciente...
+          </div>
+
+          <table *ngIf="!cargandoMetricas && proximasCitas.length > 0" class="mini-table">
+            <thead>
+              <tr>
+                <th>Fecha / Hora</th>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of proximasCitas">
+                <td><strong>{{ c.fecha }}</strong> ({{ c.hora }})</td>
+                <td>{{ c.paciente?.nombres || c.paciente?.nombre }} {{ c.paciente?.apellidos || c.paciente?.apellido }}</td>
+                <td>Dr(a). {{ c.medico?.nombre }}</td>
+                <td>{{ c.motivo }}</td>
+                <td>
+                  <span class="badge-status" [ngClass]="{
+                    'badge-prog': c.estado === 'PROGRAMADA',
+                    'badge-atend': c.estado === 'ATENDIDA',
+                    'badge-canc': c.estado === 'CANCELADA'
+                  }">
+                    {{ c.estado }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="!cargandoMetricas && proximasCitas.length === 0" style="text-align: center; padding: 25px; color: #7f8c8d;">
+            No hay citas registradas en este momento.
+          </div>
+        </div>
       </div>
 
-      <!-- Aquí se inyectarán las pantallas hijas manteniendo el menú -->
+      <!-- Rutas Hijas (Pacientes, Médicos, Citas, Usuarios) -->
       <router-outlet></router-outlet>
     </main>
   </div>

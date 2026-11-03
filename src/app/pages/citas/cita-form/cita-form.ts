@@ -32,6 +32,7 @@ export class CitaFormComponent implements OnInit {
   cargando = true;
   guardando = false;
   error = '';
+  fechaMinima = '';
 
   private citaService = inject(CitaService);
   private pacienteService = inject(PacienteService);
@@ -40,6 +41,10 @@ export class CitaFormComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
+    // La fecha mínima para programar es hoy
+    const hoy = new Date();
+    this.fechaMinima = hoy.toISOString().split('T')[0];
+    this.cita.fecha = this.fechaMinima;
     this.cargarCatalogos();
   }
 
@@ -61,7 +66,9 @@ export class CitaFormComponent implements OnInit {
         next: (resp: any) => {
           const pacs = resp.pacientes;
           const meds = resp.medicos;
-          this.pacientes = Array.isArray(pacs) ? pacs : (pacs?.content || pacs?.data || []);
+          const listaPac = Array.isArray(pacs) ? pacs : (pacs?.content || pacs?.data || []);
+          // Solo mostrar pacientes activos registrados
+          this.pacientes = listaPac.filter((p: any) => p.activo !== false);
           this.medicos = Array.isArray(meds) ? meds : (meds?.content || meds?.data || []);
           this.cdr.detectChanges();
         },
@@ -74,8 +81,16 @@ export class CitaFormComponent implements OnInit {
   }
 
   guardar(): void {
-    if (!this.cita.pacienteId || !this.cita.medicoId || !this.cita.fecha || !this.cita.hora || !this.cita.motivo) {
-      alert('Por favor completa todos los campos del formulario');
+    if (!this.cita.pacienteId) {
+      alert('Debes seleccionar un paciente registrado.');
+      return;
+    }
+    if (!this.cita.medicoId) {
+      alert('Debes seleccionar un médico.');
+      return;
+    }
+    if (!this.cita.fecha || !this.cita.hora || !this.cita.motivo.trim()) {
+      alert('Por favor completa todos los campos del formulario de cita.');
       return;
     }
 
@@ -92,12 +107,14 @@ export class CitaFormComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          alert('Cita médica programada exitosamente.');
+          alert('✅ Cita médica programada exitosamente en el sistema.');
           this.router.navigate(['/inicio/citas']);
         },
         error: (err) => {
           console.error('Error al agendar cita:', err);
-          this.error = 'Ocurrió un error al agendar la cita en el servidor.';
+          const backendMsg = err.error?.error || err.error?.message;
+          this.error = backendMsg || 'No se pudo agendar la cita. Verifica la disponibilidad del médico.';
+          alert('⚠️ ' + this.error);
           this.cdr.detectChanges();
         }
       });

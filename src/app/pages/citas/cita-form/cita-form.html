@@ -2,7 +2,7 @@
   <div class="form-card">
     <div class="form-header">
       <h2>📅 Agendar Nueva Cita Médica</h2>
-      <p>Selecciona el paciente, el médico y el horario de atención</p>
+      <p>Control de disponibilidad médica y asignación de pacientes registrados</p>
     </div>
 
     <div *ngIf="cargando" class="loading-state">
@@ -10,39 +10,47 @@
     </div>
 
     <form *ngIf="!cargando" (ngSubmit)="guardar()" class="form-grid">
+      <!-- Paciente Registrado -->
       <div class="form-group">
-        <label>Paciente *</label>
+        <label>Paciente Registrado *</label>
         <select [(ngModel)]="cita.pacienteId" name="pacienteId" required>
-          <option value="" disabled>Selecciona un paciente</option>
+          <option value="" disabled>-- Selecciona un paciente registrado --</option>
           <option *ngFor="let p of pacientes" [value]="p.id || p.idPaciente">
             {{ p.nombres || p.nombre }} {{ p.apellidos || p.apellido }} (DPI: {{ p.dpi }})
           </option>
         </select>
+        <small class="helper-text" *ngIf="pacientes.length === 0" style="color: #e67e22;">
+          ⚠️ No hay pacientes activos. Debes registrar uno primero.
+        </small>
       </div>
 
+      <!-- Médico Asignado -->
       <div class="form-group">
-        <label>Médico *</label>
+        <label>Médico Especialista *</label>
         <select [(ngModel)]="cita.medicoId" name="medicoId" required>
-          <option value="" disabled>Selecciona un médico</option>
+          <option value="" disabled>-- Selecciona un médico --</option>
           <option *ngFor="let m of medicos" [value]="m.id">
-            Dr(a). {{ m.nombre }} - {{ m.especialidad }}
+            Dr(a). {{ m.nombre }} - {{ m.especialidad }} ({{ m.numeroColegiado }})
           </option>
         </select>
       </div>
 
+      <!-- Fecha -->
       <div class="form-group">
         <label>Fecha de Consulta *</label>
-        <input type="date" [(ngModel)]="cita.fecha" name="fecha" required />
+        <input type="date" [(ngModel)]="cita.fecha" [min]="fechaMinima" name="fecha" required />
       </div>
 
+      <!-- Hora -->
       <div class="form-group">
-        <label>Hora *</label>
+        <label>Hora de Atención *</label>
         <input type="time" [(ngModel)]="cita.hora" name="hora" required />
       </div>
 
+      <!-- Motivo -->
       <div class="form-group full-width">
         <label>Motivo de Consulta / Observaciones *</label>
-        <textarea [(ngModel)]="cita.motivo" name="motivo" rows="3" required placeholder="Ej: Control de rutina, chequeo de presión, dolor de cabeza..."></textarea>
+        <textarea [(ngModel)]="cita.motivo" name="motivo" rows="3" required placeholder="Ej: Control general, dolor agudo, revisión de exámenes..."></textarea>
       </div>
 
       <div *ngIf="error" class="error-msg full-width">
@@ -51,8 +59,8 @@
 
       <div class="form-actions full-width">
         <button type="button" class="btn-cancel" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
-        <button type="submit" class="btn-submit" [disabled]="guardando">
-          {{ guardando ? 'Agendando...' : 'Agendar Cita' }}
+        <button type="submit" class="btn-submit" [disabled]="guardando || pacientes.length === 0 || medicos.length === 0">
+          {{ guardando ? 'Validando y Agendando...' : 'Agendar Cita Médica' }}
         </button>
       </div>
     </form>

@@ -12,3 +12,4 @@ export interface Cita {
   motivo: string;
   estado?: string;
 }
+

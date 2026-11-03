@@ -40,3 +40,4 @@ export class UsuarioService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
+

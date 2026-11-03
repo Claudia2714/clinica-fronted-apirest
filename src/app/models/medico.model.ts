@@ -5,3 +5,4 @@ export interface Medico {
   numeroColegiado: string;
   telefono?: string;
 }
+
