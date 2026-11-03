@@ -41,3 +41,4 @@ export class MedicamentoService {
     return this.http.delete<void>(`${this.apiUrl}/historial/recetas/${recetaId}`);
   }
 }
+

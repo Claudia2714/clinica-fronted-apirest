@@ -22,3 +22,4 @@ export interface HistorialPaciente {
     recetas: Receta[];
   }[];
 }
+

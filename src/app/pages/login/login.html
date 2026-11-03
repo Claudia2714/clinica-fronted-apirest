@@ -1,41 +1,89 @@
-<div style="max-width: 400px; margin: 50px auto; font-family: Arial, sans-serif;">
-  <h2>Iniciar Sesión</h2>
+<div class="login-page">
+  <div class="login-card">
+    <!-- Encabezado con Identidad Clínica -->
+    <div class="login-header">
+      <div class="brand-icon">🏥</div>
+      <h1>Clínica Médica</h1>
+      <p class="subtitle">Portal de Gestión y Acceso Seguro</p>
+    </div>
 
-  <div style="margin-bottom: 15px;">
-    <label>Usuario:</label>
-    <input type="text" [(ngModel)]="credenciales.username"
-           style="width: 100%; padding: 8px; box-sizing: border-box;">
-  </div>
+    <!-- Formulario de Acceso -->
+    <form (ngSubmit)="iniciarSesion()" class="login-form">
+      <!-- Campo Usuario -->
+      <div class="form-field">
+        <label for="username">Usuario del Sistema</label>
+        <div class="input-wrapper">
+          <span class="field-icon">👤</span>
+          <input
+            id="username"
+            type="text"
+            [(ngModel)]="credenciales.username"
+            name="username"
+            placeholder="Ingresa tu usuario"
+            autocomplete="username"
+            required
+          />
+        </div>
+      </div>
 
-  <div style="margin-bottom: 15px;">
-    <label>Contraseña:</label>
-    <input type="password" [(ngModel)]="credenciales.password"
-           (keydown.enter)="iniciarSesion()"
-           style="width: 100%; padding: 8px; box-sizing: border-box;">
-  </div>
+      <!-- Campo Contraseña -->
+      <div class="form-field">
+        <label for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <span class="field-icon">🔒</span>
+          <input
+            id="password"
+            type="password"
+            [(ngModel)]="credenciales.password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+      </div>
 
-  <!-- ── Widget de Cloudflare Turnstile ────────────────────────────────────────
-       data-sitekey: Site Key de tu cuenta en Cloudflare (cargada desde environment)
-       data-callback: función expuesta en window por LoginComponent
-       data-expired-callback: función expuesta en window si el token expira
-  -->
-  <div style="margin-bottom: 15px;">
-    <div class="cf-turnstile"
-         [attr.data-sitekey]="turnstileSiteKey"
-         data-callback="onCaptchaResolved"
-         data-expired-callback="onCaptchaExpired">
+      <!-- Widget de Cloudflare Turnstile -->
+      <div class="turnstile-container">
+        <div
+          class="cf-turnstile"
+          [attr.data-sitekey]="turnstileSiteKey"
+          data-callback="onCaptchaResolved"
+          data-expired-callback="onCaptchaExpired"
+          data-theme="light">
+        </div>
+      </div>
+
+      <!-- Mensaje de Alerta / Error -->
+      <div *ngIf="error" class="alert-box">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text">{{ errorMsg }}</span>
+      </div>
+
+      <!-- Botón de Envío -->
+      <button
+        type="submit"
+        class="btn-login"
+        [disabled]="cargando">
+        <span *ngIf="!cargando" class="btn-content">
+          <span>Ingresar a la Plataforma</span>
+          <span class="btn-arrow">→</span>
+        </span>
+        <span *ngIf="cargando" class="loading-content">
+          <span class="spinner"></span>
+          <span>Verificando credenciales...</span>
+        </span>
+      </button>
+    </form>
+
+    <!-- Pie Informativo de Seguridad -->
+    <div class="login-footer">
+      <div class="security-badges">
+        <span>🛡️ Rate Limiting Activo</span>
+        <span>•</span>
+        <span>🔐 JWT RS256</span>
+      </div>
+      <p class="footer-note">Acceso restringido a personal autorizado.</p>
     </div>
   </div>
-
-  <button (click)="iniciarSesion()"
-          [disabled]="cargando"
-          style="width: 100%; padding: 10px; background-color: #0056b3;
-                 color: white; border: none; cursor: pointer; opacity: 1"
-          [style.opacity]="cargando ? '0.7' : '1'">
-    {{ cargando ? 'Verificando...' : 'Entrar' }}
-  </button>
-
-  <p *ngIf="error" style="color: red; margin-top: 10px;">
-    {{ errorMsg }}
-  </p>
 </div>
