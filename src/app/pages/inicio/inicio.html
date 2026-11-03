@@ -26,6 +26,7 @@
             <ul class="sub-menu">
               <li><a routerLink="/inicio/pacientes">Consultar pacientes</a></li>
               <li><a routerLink="/inicio/pacientes/nuevo">Registrar paciente</a></li>
+              <li><a routerLink="/inicio/historial">📋 Expediente / Historial</a></li>
             </ul>
           </li>
 
@@ -44,6 +45,14 @@
             <ul class="sub-menu">
               <li><a routerLink="/inicio/citas">Consultar citas</a></li>
               <li><a routerLink="/inicio/citas/nueva">Agendar cita</a></li>
+            </ul>
+          </li>
+
+          <!-- FARMACIA / MEDICAMENTOS -->
+          <li class="nav-item" *ngIf="esAdmin || esOperador">
+            <span class="nav-link-header">Farmacia</span>
+            <ul class="sub-menu">
+              <li><a routerLink="/inicio/medicamentos">💊 Medicamentos / Stock</a></li>
             </ul>
           </li>
 
@@ -66,11 +75,11 @@
         <div class="welcome-banner">
           <div class="banner-text">
             <h2>👋 Bienvenido de nuevo, {{ usuarioActual }}</h2>
-            <p>Sistema integral de gestión clínica, control de citas y seguridad de acceso.</p>
+            <p>Sistema integral de gestión clínica, consultas médicas, recetas y control de seguridad.</p>
           </div>
           <div class="quick-actions">
             <button class="btn-quick" routerLink="/inicio/citas/nueva">+ Agendar Cita</button>
-            <button class="btn-quick secondary" routerLink="/inicio/pacientes/nuevo">+ Nuevo Paciente</button>
+            <button class="btn-quick secondary" routerLink="/inicio/historial">📋 Ver Historial</button>
           </div>
         </div>
 
@@ -168,7 +177,7 @@
         </div>
       </div>
 
-      <!-- Rutas Hijas (Pacientes, Médicos, Citas, Usuarios) -->
+      <!-- Rutas Hijas -->
       <router-outlet></router-outlet>
     </main>
   </div>

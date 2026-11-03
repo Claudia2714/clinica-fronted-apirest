@@ -1,0 +1,115 @@
+<div class="page-container">
+  <div class="header-section">
+    <h2>💊 Farmacia e Inventario de Medicamentos</h2>
+    <button class="btn-primary" (click)="abrirCrear()">+ Agregar Medicamento</button>
+  </div>
+
+  <div class="search-bar-section">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        (input)="aplicarFiltro()"
+        placeholder="Buscar por nombre, presentación o dosis..."
+        class="search-input"
+      />
+      <button *ngIf="terminoBusqueda" class="btn-clear-search" (click)="limpiarBusqueda()">✕</button>
+    </div>
+    <div class="results-count" *ngIf="!cargando">
+      Mostrando {{ medicamentosFiltrados.length }} de {{ medicamentos.length }} medicamentos
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Medicamento</th>
+          <th>Presentación</th>
+          <th>Dosis Estándar</th>
+          <th>Stock Disponible</th>
+          <th style="text-align: center;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="cargando">
+          <td colspan="6" style="text-align: center; color: #3498db; padding: 25px;">
+            ⏳ Cargando inventario de medicamentos...
+          </td>
+        </tr>
+        <ng-container *ngIf="!cargando">
+          <tr *ngFor="let m of medicamentosFiltrados">
+            <td><strong>#{{ m.id }}</strong></td>
+            <td><strong>{{ m.nombre }}</strong></td>
+            <td><span class="badge-role">{{ m.presentacion || 'General' }}</span></td>
+            <td>{{ m.dosis || '—' }}</td>
+            <td>
+              <span [style.color]="(m.stockDisponible || 0) < 10 ? '#e74c3c' : '#27ae60'">
+                <strong>{{ m.stockDisponible || 0 }}</strong> unidades
+              </span>
+            </td>
+            <td style="text-align: center;">
+              <div class="actions-cell">
+                <button class="btn-action btn-edit" (click)="abrirEditar(m)">✏️ Modificar</button>
+                <button class="btn-action btn-delete" (click)="eliminar(m.id, m.nombre)">🗑️ Eliminar</button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="error">
+            <td colspan="6" style="text-align: center; color: #e74c3c; padding: 25px;">
+              ⚠️ {{ error }}
+            </td>
+          </tr>
+
+          <tr *ngIf="!error && medicamentos.length === 0">
+            <td colspan="6" style="text-align: center; color: #7f8c8d; padding: 25px;">
+              📋 No hay medicamentos registrados en inventario.
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para Medicamento -->
+  <div class="modal-overlay" *ngIf="mostrarModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ medForm.id ? '✏️ Modificar Medicamento' : '💊 Registrar Medicamento en Inventario' }}</h3>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre Comercial / Genérico *</label>
+          <input type="text" [(ngModel)]="medForm.nombre" placeholder="ej: Paracetamol, Amoxicilina..." />
+        </div>
+
+        <div class="form-group">
+          <label>Presentación</label>
+          <input type="text" [(ngModel)]="medForm.presentacion" placeholder="ej: Tabletas, Jarabe, Suspensión, Ampolla..." />
+        </div>
+
+        <div class="form-group">
+          <label>Concentración / Dosis</label>
+          <input type="text" [(ngModel)]="medForm.dosis" placeholder="ej: 500mg, 10ml, 1g..." />
+        </div>
+
+        <div class="form-group">
+          <label>Stock Disponible en Farmacia (Unidades)</label>
+          <input type="number" [(ngModel)]="medForm.stockDisponible" min="0" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+        <button class="btn-submit" (click)="guardar()" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : 'Guardar Medicamento' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

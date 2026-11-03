@@ -8,6 +8,8 @@ import { MedicosComponent } from './pages/medicos/medicos';
 import { MedicoFormComponent } from './pages/medicos/medico-form/medico-form';
 import { CitasComponent } from './pages/citas/citas';
 import { CitaFormComponent } from './pages/citas/cita-form/cita-form';
+import { MedicamentosComponent } from './pages/medicamentos/medicamentos';
+import { HistorialComponent } from './pages/historial/historial';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
@@ -66,6 +68,22 @@ export const routes: Routes = [
       { 
         path: 'citas/nueva',
         component: CitaFormComponent,
+        canActivate: [roleGuard],
+        data: { rolRequerido: 'ROLE_OPERADOR' }
+      },
+
+      // ── FARMACIA / MEDICAMENTOS ───────────────
+      { 
+        path: 'medicamentos',
+        component: MedicamentosComponent,
+        canActivate: [roleGuard],
+        data: { rolRequerido: 'ROLE_OPERADOR' }
+      },
+
+      // ── EXPEDIENTE / HISTORIAL CLÍNICO ────────
+      { 
+        path: 'historial',
+        component: HistorialComponent,
         canActivate: [roleGuard],
         data: { rolRequerido: 'ROLE_OPERADOR' }
       },

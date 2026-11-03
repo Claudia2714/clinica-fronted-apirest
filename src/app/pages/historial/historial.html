@@ -1,0 +1,132 @@
+<div class="page-container">
+  <div class="header-section">
+    <div>
+      <h2>📋 Expediente e Historial Clínico</h2>
+      <p style="color: #7f8c8d; margin-top: 4px;">Consulta las citas previas del paciente, los médicos que lo atendieron y los medicamentos recetados</p>
+    </div>
+  </div>
+
+  <!-- Selector de Paciente -->
+  <div class="selector-card">
+    <label>Seleccionar Paciente:</label>
+    <select [(ngModel)]="pacienteSeleccionadoId" (change)="onPacienteChange()" class="select-paciente">
+      <option *ngFor="let p of pacientes" [value]="p.id || p.idPaciente">
+        {{ p.nombres || p.nombre }} {{ p.apellidos || p.apellido }} (DPI: {{ p.dpi }})
+      </option>
+    </select>
+  </div>
+
+  <!-- Contenido del Expediente -->
+  <div *ngIf="cargandoHistorial" class="loading-state">
+    ⏳ Cargando historial clínico y consultas médicas...
+  </div>
+
+  <div *ngIf="!cargandoHistorial && historial" class="expediente-wrapper">
+    <!-- Ficha del Paciente -->
+    <div class="paciente-badge-card">
+      <div class="paciente-avatar">👤</div>
+      <div class="paciente-info">
+        <h3>{{ historial.paciente.nombre }} {{ historial.paciente.apellido }}</h3>
+        <p><strong>DPI:</strong> {{ historial.paciente.dpi }} | <strong>Teléfono:</strong> {{ historial.paciente.telefono }} | <strong>Correo:</strong> {{ historial.paciente.correo }}</p>
+      </div>
+      <div class="consultas-count">
+        <span class="count-number">{{ historial.totalConsultas }}</span>
+        <span class="count-label">Consultas Totales</span>
+      </div>
+    </div>
+
+    <!-- Lista de Consultas y Recetas -->
+    <h3 style="color: #2c3e50; margin: 25px 0 15px 0;">Historial de Consultas Médicas y Prescripciones</h3>
+
+    <div *ngIf="historial.consultas.length === 0" class="empty-state">
+      Este paciente aún no registra consultas médicas o citas completadas.
+    </div>
+
+    <div class="consultas-timeline">
+      <div *ngFor="let item of historial.consultas" class="consulta-card">
+        <div class="consulta-header">
+          <div class="consulta-meta">
+            <span class="consulta-fecha">📅 {{ item.cita.fecha }} a las {{ item.cita.hora }}</span>
+            <span class="badge-status" [ngClass]="{
+              'badge-prog': item.cita.estado === 'PROGRAMADA',
+              'badge-atend': item.cita.estado === 'ATENDIDA',
+              'badge-canc': item.cita.estado === 'CANCELADA'
+            }">
+              {{ item.cita.estado }}
+            </span>
+          </div>
+          <button class="btn-recetar" (click)="abrirPrescribir(item.cita)">
+            + Prescribir Medicamento
+          </button>
+        </div>
+
+        <div class="consulta-body">
+          <div class="medico-atencion">
+            <strong>👨‍⚕️ Médico Tratante:</strong> Dr(a). {{ item.cita.medico?.nombre }} ({{ item.cita.medico?.especialidad }})
+          </div>
+          <div class="motivo-consulta">
+            <strong>Motivo / Diagnóstico:</strong> {{ item.cita.motivo }}
+          </div>
+        </div>
+
+        <!-- Medicamentos Recetados en esta Consulta -->
+        <div class="recetas-section">
+          <h4>💊 Medicamentos Recetados en esta Consulta:</h4>
+          <div *ngIf="item.recetas.length === 0" class="sin-recetas">
+            No se prescribieron medicamentos en esta consulta.
+          </div>
+          <ul *ngIf="item.recetas.length > 0" class="recetas-list">
+            <li *ngFor="let r of item.recetas" class="receta-item">
+              <div class="receta-info">
+                <strong>{{ r.medicamento?.nombre }}</strong> ({{ r.medicamento?.presentacion }} {{ r.medicamento?.dosis }})
+                <div class="receta-ind">
+                  <em>Indicaciones:</em> {{ r.indicaciones }} (Cantidad: {{ r.cantidad }})
+                </div>
+              </div>
+              <button class="btn-del-receta" (click)="eliminarReceta(r.id)" title="Quitar prescripción">✕</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Prescribir Medicamento -->
+  <div class="modal-overlay" *ngIf="mostrarModalReceta">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>💊 Prescribir Medicamento a la Consulta</h3>
+        <button class="btn-close" (click)="cerrarModalReceta()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Medicamento de Farmacia *</label>
+          <select [(ngModel)]="recetaForm.medicamentoId" class="form-select">
+            <option value="" disabled>-- Selecciona un medicamento en stock --</option>
+            <option *ngFor="let m of medicamentosDisponibles" [value]="m.id">
+              {{ m.nombre }} - {{ m.presentacion }} {{ m.dosis }} (Stock: {{ m.stockDisponible }})
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Cantidad a Despachar (Unidades) *</label>
+          <input type="number" [(ngModel)]="recetaForm.cantidad" min="1" />
+        </div>
+
+        <div class="form-group">
+          <label>Indicaciones Médicas / Dosis *</label>
+          <textarea [(ngModel)]="recetaForm.indicaciones" rows="3" placeholder="Ej: Tomar 1 pastilla cada 8 horas por 7 días después de comer"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModalReceta()" [disabled]="guardandoReceta">Cancelar</button>
+        <button class="btn-submit" (click)="guardarReceta()" [disabled]="guardandoReceta">
+          {{ guardandoReceta ? 'Guardando...' : 'Prescribir Medicamento' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
